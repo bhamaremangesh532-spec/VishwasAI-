@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>VishwasAI — Digital Content Trust Assistant</title>
+
+<style>
+:root{
+  --navy:#142d4e;
+  --blue:#2369b4;
+  --bg:#f4f8fc;
+  --text:#202832;
+  --green:#278255;
+  --orange:#df7e2d;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+header{
+  background:linear-gradient(135deg,#142d4e,#2369b4);
+  color:white;
+  padding:22px 18px;
+}
+
+.brand{
+  max-width:1050px;
+  margin:auto;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+}
+
+.brand h1{
+  margin:0;
+  font-size:28px;
+}
+
+.brand small{
+  opacity:.9;
+}
+
+.lang{
+  background:white;
+  color:var(--navy);
+  border:0;
+  border-radius:20px;
+  padding:9px 14px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+main{
+  max-width:1050px;
+  margin:25px auto;
+  padding:0 15px;
+}
+
+.hero{
+  background:white;
+  border-radius:18px;
+  padding:25px;
+  box-shadow:0 6px 24px #183b5b18;
+}
+
+h2{
+  margin-top:0;
+  color:var(--navy);
+}
+
+.sub{
+  color:#5b6773;
+  line-height:1.55;
+}
+
+.upload{
+  border:2px dashed #9bb5cf;
+  border-radius:16px;
+  padding:30px;
+  text-align:center;
+  margin:22px 0;
+  background:#f9fcff;
+}
+
+input[type=file]{
+  display:none;
+}
+
+.choose{
+  display:inline-block;
+  background:var(--blue);
+  color:white;
+  padding:13px 20px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:700;
+}
+
+#filename{
+  margin-top:12px;
+  color:#596673;
+}
+
+button.analyze{
+  width:100%;
+  padding:15px;
+  border:0;
+  border-radius:11px;
+  background:var(--green);
+  color:white;
+  font-size:17px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+button.analyze:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+}
+
+.result{
+  display:none;
+  margin-top:24px;
+  border-radius:16px;
+  padding:22px;
+  background:#fff;
+  border-left:7px solid var(--orange);
+}
+
+.badge{
+  display:inline-block;
+  padding:8px 13px;
+  border-radius:18px;
+  background:#fff0e4;
+  color:#a94f0c;
+  font-weight:800;
+}
+
+.confidence{
+  margin-top:14px;
+  padding:12px 14px;
+  border-radius:10px;
+  background:#f5f8fb;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+  margin-top:18px;
+}
+
+.card{
+  background:white;
+  border-radius:14px;
+  padding:18px;
+  box-shadow:0 3px 15px #183b5b12;
+}
+
+.card h3{
+  margin-top:0;
+  color:var(--navy);
+}
+
+ul{
+  line-height:1.7;
+  padding-left:22px;
+}
+
+.samples{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+}
+
+.sample-btn{
+  padding:14px;
+  border:0;
+  border-radius:10px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.real{
+  background:#e8f7ef;
+  color:#17653f;
+}
+
+.suspicious{
+  background:#fff0e4;
+  color:#a94f0c;
+}
+
+.ai{
+  background:#fbe9ee;
+  color:#a52c4a;
+}
+
+.note{
+  font-size:13px;
+  color:#687582;
+  margin-top:18px;
+}
+
+footer{
+  text-align:center;
+  padding:25px;
+  color:#71808e;
+  font-size:13px;
+}
+
+@media(max-width:700px){
+
+  .grid{
+    grid-template-columns:1fr;
+  }
+
+  .samples{
+    grid-template-columns:1fr;
+  }
+
+  .brand{
+    align-items:flex-start;
+  }
+
+  .brand h1{
+    font-size:22px;
+  }
+}
+</style>
+</head>
+
+
+<body>
+
+<header>
+
+<div class="brand">
+
+<div>
+<h1>VishwasAI</h1>
+<small>Digital Content Trust Assistant</small>
+</div>
+
+<button class="lang"
+onclick="toggleLang()"
+id="langBtn">
+मराठी
+</button>
+
+</div>
+
+</header>
+
+
+<main>
+
+<section class="hero">
+
+<h2 id="title">
+Check suspicious digital content
+</h2>
+
+<p class="sub" id="intro">
+Upload an image, video or audio file to see a demonstration
+risk assessment and verification guidance.
+</p>
+
+
+<!-- Upload -->
+
+<div class="upload">
+
+<label class="choose"
+for="file"
+id="choose">
+Choose file
+</label>
+
+<input
+id="file"
+type="file"
+accept="image/*,video/*,audio/*">
+
+<div id="filename">
+No file selected
+</div>
+
+</div>
+
+
+<!-- Analyze -->
+
+<button
+class="analyze"
+id="analyze"
+disabled>
+
+Analyze Content
+
+</button>
+
+
+<!-- Result -->
+
+<div class="result" id="result">
+
+<span class="badge" id="badge">
+Needs Verification
+</span>
+
+<h3 id="resultTitle">
+Demo assessment
+</h3>
+
+<p id="resultText">
+
+This prototype does not prove that content is real or fake.
+It demonstrates how VishwasAI can present an
+uncertainty-aware result.
+
+</p>
+
+
+<div class="confidence">
+
+<strong id="confidenceLabel">
+Demo confidence:
+</strong>
+
+<span id="confidence">
+72%
+</span>
+
+</div>
+
+</div>
+
+
+<!-- Sample Test Cases -->
+
+<div class="card" style="margin-top:18px;">
+
+<h3 id="sampleTitle">
+Sample Test Cases
+</h3>
+
+<p class="sub" id="sampleIntro">
+
+Use these demo cases to explain how the prototype could
+classify different content types.
+
+These are simulated outputs, not real forensic verdicts.
+
+</p>
+
+
+<div class="samples">
+
+<button
+class="sample-btn real"
+onclick="showSample('real')">
+
+🟢 Real — Demo
+
+</button>
+
+
+<button
+class="sample-btn suspicious"
+onclick="showSample('suspicious')">
+
+🟠 Suspicious — Demo
+
+</button>
+
+
+<button
+class="sample-btn ai"
+onclick="showSample('ai')">
+
+🔴 AI-Generated — Demo
+
+</button>
+
+</div>
+
+</div>
+
+
+<!-- Information -->
+
+<div class="grid">
+
+
+<div class="card">
+
+<h3 id="whyTitle">
+Possible signals
+</h3>
+
+<ul>
+
+<li>
+AI-generation or manipulation cannot be ruled out.
+</li>
+
+<li>
+File-level analysis and source verification are recommended.
+</li>
+
+<li>
+Visual/audio clues alone are not conclusive.
+</li>
+
+</ul>
+
+</div>
+
+
+<div class="card">
+
+<h3 id="whatTitle">
+What should you do?
+</h3>
+
+<ul>
+
+<li>
+Check the original source and date.
+</li>
+
+<li>
+Compare the claim with reliable independent sources.
+</li>
+
+<li>
+Do not forward suspicious content until verified.
+</li>
+
+</ul>
+
+</div>
+
+</div>
+
+
+<p class="note" id="note">
+
+Prototype note: this first MVP uses a simulated demonstration
+assessment.
+
+A production version would connect validated
+image/video/audio forensic models and continuously evaluate
+their accuracy.
+
+</p>
+
+</section>
+
+</main>
+
+
+<footer>
+
+VishwasAI • Responsible AI • Deepfake Detection •
+Cyber Resilience • Digital Trust
+
+</footer>
+
+
+<script>
+
+let selected = false;
+let marathi = false;
+
+const file =
+document.getElementById("file");
+
+const nameEl =
+document.getElementById("filename");
+
+const analyze =
+document.getElementById("analyze");
+
+
+/* File selection */
+
+file.addEventListener("change", function(){
+
+selected = !!file.files.length;
+
+nameEl.textContent =
+selected
+? file.files[0].name
+: "No file selected";
+
+analyze.disabled = !selected;
+
+document.getElementById("result")
+.style.display = "none";
+
+});
+
+
+/* Analyze button */
+
+analyze.addEventListener("click", function(){
+
+const result =
+document.getElementById("result");
+
+result.style.display = "block";
+
+result.scrollIntoView({
+behavior:"smooth",
+block:"nearest"
+});
+
+});
+
+
+/* Sample cases */
+
+function showSample(type){
+
+const result =
+document.getElementById("result");
+
+const badge =
+document.getElementById("badge");
+
+const title =
+document.getElementById("resultTitle");
+
+const text =
+document.getElementById("resultText");
+
+const confidence =
+document.getElementById("confidence");
+
+result.style.display = "block";
+
+
+/* REAL */
+
+if(type === "real"){
+
+badge.textContent =
+marathi
+? "🟢 Real — डेमो"
+: "🟢 Real — Demo";
+
+badge.style.background = "#e8f7ef";
+badge.style.color = "#17653f";
+
+title.textContent =
+marathi
+? "डेमो निकाल: Real"
+: "Demo result: Real";
+
+text.textContent =
+marathi
+? "या नमुन्यात स्पष्ट AI-manipulation संकेत दाखवलेले नाहीत. Production system मध्ये source verification आवश्यक राहील."
+: "No clear AI-manipulation signals are demonstrated in this sample. A production system would still require source verification.";
+
+confidence.textContent = "91%";
+
+}
+
+
+/* SUSPICIOUS */
+
+else if(type === "suspicious"){
+
+badge.textContent =
+marathi
+? "🟠 Suspicious — डेमो"
+: "🟠 Suspicious — Demo";
+
+badge.style.background = "#fff0e4";
+badge.style.color = "#a94f0c";
+
+title.textContent =
+marathi
+? "डेमो निकाल: Suspicious"
+: "Demo result: Suspicious";
+
+text.textContent =
+marathi
+? "काही संकेत अतिरिक्त पडताळणीची गरज दर्शवतात. मूळ स्रोत, तारीख आणि स्वतंत्र विश्वसनीय स्रोत तपासा."
+: "Some signals indicate that additional verification is needed. Check the original source, date and independent reliable sources.";
+
+confidence.textContent = "78%";
+
+}
+
+
+/* AI GENERATED */
+
+else{
+
+badge.textContent =
+marathi
+? "🔴 AI-Generated — डेमो"
+: "🔴 AI-Generated — Demo";
+
+badge.style.background = "#fbe9ee";
+badge.style.color = "#a52c4a";
+
+title.textContent =
+marathi
+? "डेमो निकाल: AI-Generated"
+: "Demo result: AI-Generated";
+
+text.textContent =
+marathi
+? "या simulated case मध्ये AI-generated content चे संभाव्य संकेत दाखवले आहेत. हा खरा forensic verdict नाही."
+: "This simulated case demonstrates possible signals of AI-generated content. It is not a real forensic verdict.";
+
+confidence.textContent = "89%";
+
+}
+
+
+result.scrollIntoView({
+behavior:"smooth",
+block:"nearest"
+});
+
+}
+
+
+/* Language */
+
+function toggleLang(){
+
+marathi = !marathi;
+
+
+/* Button */
+
+document.getElementById("langBtn")
+.textContent =
+marathi
+? "English"
+: "मराठी";
+
+
+/* Main */
+
+document.getElementById("title")
+.textContent =
+marathi
+? "संशयास्पद डिजिटल सामग्री तपासा"
+: "Check suspicious digital content";
+
+
+document.getElementById("intro")
+.textContent =
+marathi
+? "फोटो, व्हिडिओ किंवा ऑडिओ अपलोड करून डेमो जोखीम मूल्यांकन आणि पडताळणी मार्गदर्शन पहा."
+: "Upload an image, video or audio file to see a demonstration risk assessment and verification guidance.";
+
+
+document.getElementById("choose")
+.textContent =
+marathi
+? "फाइल निवडा"
+: "Choose file";
+
+
+document.getElementById("analyze")
+.textContent =
+marathi
+? "सामग्री तपासा"
+: "Analyze Content";
+
+
+/* Result */
+
+document.getElementById("badge")
+.textContent =
+marathi
+? "पडताळणी आवश्यक"
+: "Needs Verification";
+
+
+document.getElementById("resultTitle")
+.textContent =
+marathi
+? "डेमो मूल्यांकन"
+: "Demo assessment";
+
+
+document.getElementById("resultText")
+.textContent =
+marathi
+? "हा prototype सामग्री खरी किंवा बनावट आहे हे सिद्ध करत नाही. VishwasAI अनिश्चितता लक्षात घेऊन निकाल कसा दाखवू शकते हे येथे दाखवले आहे."
+: "This prototype does not prove that content is real or fake. It demonstrates how VishwasAI can present an uncertainty-aware result.";
+
+
+/* Cards */
+
+document.getElementById("whyTitle")
+.textContent =
+marathi
+? "संभाव्य संकेत"
+: "Possible signals";
+
+
+document.getElementById("whatTitle")
+.textContent =
+marathi
+? "काय करावे?"
+: "What should you do?";
+
+
+document.getElementById("sampleTitle")
+.textContent =
+marathi
+? "नमुना चाचणी प्रकरणे"
+: "Sample Test Cases";
+
+
+document.getElementById("sampleIntro")
+.textContent =
+marathi
+? "वेगवेगळ्या सामग्रीसाठी prototype कसा निकाल दाखवू शकतो हे पाहण्यासाठी ही demo cases वापरा. हे simulated outputs आहेत."
+: "Use these demo cases to explain how the prototype could classify different content types. These are simulated outputs, not real forensic verdicts.";
+
+
+/* Confidence */
+
+document.getElementById("confidenceLabel")
+.textContent =
+marathi
+? "डेमो confidence: "
+: "Demo confidence: ";
+
+
+/* Note */
+
+document.getElementById("note")
+.textContent =
+marathi
+? "Prototype सूचना: हा पहिला MVP simulated demonstration assessment वापरतो. Production version मध्ये validated image/video/audio forensic models जोडले जातील आणि त्यांची accuracy सतत तपासली जाईल."
+: "Prototype note: this first MVP uses a simulated demonstration assessment. A production version would connect validated image/video/audio forensic models and continuously evaluate their accuracy.";
+
+}
+
+</script>
+
+</body>
+  </html>

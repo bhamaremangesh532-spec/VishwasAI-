@@ -1,2 +1,0 @@
-# VishwasAI-
-Vishwas AI 
